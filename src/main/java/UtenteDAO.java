@@ -19,7 +19,7 @@ public class UtenteDAO {
         return null;
     }
 	
-	public void doSave(Utente utente) {
+	public boolean doSave(Utente utente) {
         String query = "INSERT INTO utente (username, email, pass, indirizzo, ruolo) VALUES (?, ?, ?, ?, ?)";
         
         try (Connection con = ConnessioneMySQL.getConnection();
@@ -32,8 +32,9 @@ public class UtenteDAO {
             ps.setString(5, utente.getRuolo().name());
 
             ps.executeUpdate();
+            return true;
         } catch (SQLException e) {
-            //e.printStackTrace();
+           return false;
         }
     }
 	
