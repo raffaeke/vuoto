@@ -1,0 +1,50 @@
+import java.sql.*;
+public class UtenteDAO {
+	public Utente doRetrieveByEmailPassword(String email, String password) {
+        String query = "SELECT * FROM utente WHERE email = ? AND pass = ?";
+        
+        try (Connection con = ConnessioneMySQL.getConnection();
+             PreparedStatement ps = con.prepareStatement(query)) {
+            
+            ps.setString(1, email);
+            ps.setString(2, password);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                return mapper(rs); 
+            }
+        } catch (SQLException e) {
+           // e.printStackTrace();
+        }
+        return null;
+    }
+	
+	public void doSave(Utente utente) {
+        String query = "INSERT INTO utente (username, email, pass, indirizzo, ruolo) VALUES (?, ?, ?, ?, ?)";
+        
+        try (Connection con = ConnessioneMySQL.getConnection();
+             PreparedStatement ps = con.prepareStatement(query)) {
+            
+            ps.setString(1, utente.getUsername());
+            ps.setString(2, utente.getEmail());
+            ps.setString(3, utente.getPassword());
+            ps.setString(4, utente.getIndirizzo());
+            ps.setString(5, utente.getRuolo().name());
+
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            //e.printStackTrace();
+        }
+    }
+	
+	private Utente mapper(ResultSet rs) throws SQLException {
+        Utente u = new Utente();
+        u.setId(rs.getInt("id"));
+        u.setUsername(rs.getString("username"));
+        u.setEmail(rs.getString("email"));
+        u.setPassword(rs.getString("pass"));
+        u.setIndirizzo(rs.getString("indirizzo"));
+        u.setRuolo(Ruolo.valueOf(rs.getString("ruolo")));
+        return u;
+    }
+}
